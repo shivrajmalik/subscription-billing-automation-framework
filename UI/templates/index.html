@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Framework UI</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Automation Framework UI</h2>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-3">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <!-- Client Dropdown -->
+            <div class="form-group">
+                <label for="client">Select Client</label>
+                <select class="form-control" id="client" name="client">
+                    <option>Select Client</option>
+                    {% for client in client_names %}
+                        <option value="{{ client }}" {% if client == selected_client %}selected{% endif %}>{{ client }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Instance Dropdown -->
+            <div class="form-group">
+                <label for="instance">Select Instance</label>
+                <select class="form-control" id="instance" name="instance">
+                    <option>Select Instance</option>
+                    <option value="QA" {% if selected_instance == 'QA' %}selected{% endif %}>QA</option>
+                    <option value="Demo" {% if selected_instance == 'Demo' %}selected{% endif %}>Demo</option>
+                    <option value="Live" {% if selected_instance == 'Live' %}selected{% endif %}>Live</option>
+                </select>
+            </div>
+
+            <!-- Customer Selection -->
+            <div class="form-group">
+                <label for="customer_option">Customer Selection</label><br>
+                <input type="radio" id="manual" name="customer_option" value="manual" {% if selected_option == 'manual' %}checked{% endif %} onclick="toggleCustomerId(true)">
+                <label for="manual">Enter customer ID</label><br>
+
+                <input type="radio" id="active_one" name="customer_option" value="active_one" {% if selected_option == 'active_one' %}checked{% endif %} onclick="toggleCustomerId(false)">
+                <label for="active_one">Search for an active customer</label><br>
+
+                <input type="radio" id="active_all" name="customer_option" value="active_all" {% if selected_option == 'active_all' %}checked{% endif %} onclick="toggleCustomerId(false)">
+                <label for="active_all">Search for all active customers</label><br>
+
+                <input type="radio" id="suspended_one" name="customer_option" value="suspended_one" {% if selected_option == 'suspended_one' %}checked{% endif %} onclick="toggleCustomerId(false)">
+                <label for="suspended_one">Search for a suspended customer</label><br>
+
+                <input type="radio" id="suspended_all" name="customer_option" value="suspended_all" {% if selected_option == 'suspended_all' %}checked{% endif %} onclick="toggleCustomerId(false)">
+                <label for="suspended_all">Search for all suspended customers</label><br>
+
+                <!-- Customer ID Entry -->
+                <input type="text" class="form-control mt-3" id="customer_id" name="customer_id" placeholder="Enter Customer ID"
+                       value="{{ customer_id }}" {% if selected_option != 'manual' %}disabled{% endif %}>
+            </div>
+
+            <!-- Action Buttons -->
+            <button type="submit" name="action_type" value="change" class="btn btn-primary mt-3">Run Plan Change</button>
+            <button type="submit" name="action_type" value="renew" class="btn btn-success mt-3 ml-2">Run Plan Renew</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS + Toggle Script -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        function toggleCustomerId(enable) {
+            document.getElementById('customer_id').disabled = !enable;
+        }
+
+        // Call toggle function on page load based on selected radio
+        window.onload = function () {
+            const selectedOption = document.querySelector('input[name="customer_option"]:checked').value;
+            toggleCustomerId(selectedOption === 'manual');
+        }
+    </script>
+</body>
+</html>
